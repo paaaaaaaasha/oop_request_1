@@ -1,22 +1,33 @@
-import os
-def create_list(folder):
-    file_list = os.listdir(folder)
-    sorted_file_list = []
-    for file in file_list:
-        with open(folder + "/" + file) as _tmp_list:
-            sorted_file_list.append([file, 0, []])
-            for line in _tmp_list:
-                sorted_file_list[-1][2].append(line.strip())
-                sorted_file_list[-1][1] += 1
-    sorted_file_list=sorted(sorted_file_list, key=lambda x: x[1], reverse=False)
-    with open('by_sorted' + '.txt', 'w+') as sorted_file:
-        sorted_file.write(f'Даны файлы:\n')
-        for file in sorted_file_list:
-            sorted_file.write(f'Назввание файла: {file[0]}\n')
-            sorted_file.write(f'Количество строк: {file[1]}\n')
-            for string in file[2]:
-                sorted_file.write(string + '\n')
-            sorted_file.write('\n')
-    return print('File sorted')
+import requests
 
-create_list('LIST')
+
+TOKEN = '2619421814940190'
+superhero = ['Hulk', 'Thanos', 'Captain America']
+
+
+def intelligence_compare(hero_list):
+    super_man = []
+    for hero in hero_list:
+        url = f'https://www.superheroapi.com/api.php/{TOKEN}/search/{hero}'
+        intelligence = requests.get(url).json()
+        try:
+            for power_stats in intelligence['results']:
+                super_man.append({
+                    'name': power_stats['name'],
+                    'intelligence': power_stats['powerstats']['intelligence'],
+                })
+        except KeyError:
+            print(f"Ошибка. Проверьте список супергероев: {hero_list}")
+
+    intelligence_super_hero = 0
+    name = ''
+    for intelligence_hero in super_man:
+        if intelligence_super_hero < int(intelligence_hero['intelligence']):
+            intelligence_super_hero = int(intelligence_hero['intelligence'])
+            name = intelligence_hero['name']
+
+    print(f"Самый интелектуальный супергерой: {name}, его интелект: {intelligence_super_hero}")
+
+if __name__ == '__main__':
+
+    intelligence_compare(superhero)
